@@ -3,28 +3,12 @@ import './FetchDataVirus.css';
 
 export class FetchDataVirus extends Component {
   static displayName = FetchDataVirus.name;
-
-  //constructor(props) {
-  //  super(props);
-  //  this.state = { forecasts: [], loading: true };
-  //  var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-  //  var targetUrl = 'https://ghoapi.azureedge.net/api';
-  //  fetch(proxyUrl + targetUrl)
-  //    .then(response => response.json())
-  //    .then(contents => {
-  //      console.log(contents.value[1])
-  //      this.setState({
-  //        forecasts: contents.value, loading: false
-  //      })
-  //    })
-  //    .catch(() => console.log("Can’t access " + targetUrl + " response. Blocked by browser?"));
-  //}
   // Source: https://rapidapi.com/KishCom/api/covid-19-coronavirus-statistics/details
   constructor(props) {
     super(props);
-    this.state = { forecasts: [], loading: true };
+    this.state = { forecasts: [], loading: true, total: 0, totalCases: 0 };
     this.countries = { countries: [], loading: true };
-    var url = "https://covid-19-coronavirus-statistics.p.rapidapi.com/v1/stats?country=Canada"; 
+      var url = "https://covid-19-coronavirus-statistics.p.rapidapi.com/v1/stats?country=Canada"; 
     url = "https://covid-19-coronavirus-statistics.p.rapidapi.com/v1/stats"; 
     fetch(url, {
         "method": "GET",
@@ -35,8 +19,21 @@ export class FetchDataVirus extends Component {
       })
       .then(response => response.json())
       .then(data => {
-        this.setState({ forecasts: data.data.covid19Stats, loading: false });
-        console.log(data.data.covid19Stats[1]);
+        var i;
+        var sum = 0;
+        var cases = 0;
+        for (i = 0; i < data.data.covid19Stats.length; i++) {
+          sum = sum + data.data.covid19Stats[i].deaths;
+          cases = cases + data.data.covid19Stats[i].confirmed;
+        }
+        this.setState({
+          forecasts: data.data.covid19Stats,
+          loading: false,
+          total: Number(sum).toLocaleString("en-us"),
+          totalCases: Number(cases).toLocaleString("en-us")
+        });
+        console.log(sum);
+        console.log(data.data.covid19Stats[0]);
         })
       .catch(err => {
         console.log(err);
@@ -57,20 +54,13 @@ export class FetchDataVirus extends Component {
       .catch(err => {
         console.log(err);
       });
-
-    //$(document).ready(function () {
-    //  $('#dtOrderExample').DataTable({
-    //    "order": [[3, "desc"]]
-    //  });
-    //  $('.dataTables_length').addClass('bs-select');
-    //});
   }
 
   static renderForecastsTable(forecasts) {
     return (
       <div>
         <div className='small-text'>
-        * This program uses an API with publicly available data about current confirmed cases, deaths, and recoveries of the COVID-19 virus AKA Coronavirus compiled by Johns Hopkins University. Accepts: country as filter parameter, otherwise returns all stats. Country name must match exactly with what is in the data (URL encoded spaces and punctuation) For some reason RapidAPI counts 304 "Not Modified" responses as "errors". This is the reason for the high "error count" of this API.
+        * This program uses an API with publicly available data about current confirmed cases, deaths, and recoveries of the COVID-19 virus AKA Coronavirus compiled by Johns Hopkins University.
         </div>
         
         <table className='table table-striped table-bordered' >
@@ -111,17 +101,9 @@ export class FetchDataVirus extends Component {
     return (
     
       <div>
-        <table>
-          <tr>
-            <td>
-              <h1>Reporte de occurencia</h1>
-            </td>
-            <td className='right-justified'>
-                * Todos los paises.
-            </td>
-            </tr>
-        </table>
-
+        <h1>Reporte de occurencia</h1>
+        <h4> {this.state.totalCases} casos confirmados.</h4>
+        <h4> {this.state.total} personas fallecidas. </h4>
         <p>Los valores en esta tabla reflejan los ultimos datos reportados hasta la fecha bajo la columna 'Ultima actualizacion', ordenados por casos confirmados.</p>
         {contents}
       </div>
