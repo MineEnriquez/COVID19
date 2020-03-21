@@ -5,6 +5,7 @@ This program uses an API with publicly available data about current confirmed ca
 Author: Minerva Enriquez.
 Platform: ASP.Net Core with React.
 March 20, 2020.
+
 ---
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
